@@ -1,5 +1,5 @@
 # Process of operations
-# Default: reads the sensors every 500ms
+# Default: reads the sensors every 500ms 
 
 import RPi.GPIO as GPIO
 import Adafruit_MCP3008
