@@ -34,17 +34,31 @@ def reset(reset_btn):
 
 def freq(freq_btn):
 	# changes the sampling rate between: 500ms, 1s, 2s
-	switcher = {
-		0.5: lambda frequency : frequency + 0.5 ,
-		1 : lambda frequency : frequency + 1,
-		2: lambda frequency : frequency - 1.5,
-	}
-	switcher.get(frequency)
+	global frequency
+	# switcher = {
+	# 	0.5: lambda frequency: frequency + 0.5,
+	# 	1: lambda frequency: frequency + 1,
+	# 	2: lambda frequency: frequency - 1.5,
+	# }
+	if frequency==0.5:
+		frequency=1
+	elif frequency==1:
+		frequency=2
+	elif frequency==2:
+		frequency=0.5
+	print("Frequency changed to: "+str(frequency)+"s")
+	# switcher.get(frequency)
 
 def stop(stop_btn):
 	# Stops or starts the reading (sampling) of the sensors
 	# does not affect the timer
-	pass
+	global sampling_on
+	if sampling_on==False:
+		sampling_on = True
+		print("Start sampling")
+	else:
+		sampling_on = False
+		print("Stop sampling")
 
 def display(display_btn):
 	# Displays the first 5 readings since the sop switch was pressed
@@ -62,16 +76,18 @@ try:
 	# initialise variables
 	frequency = 0.5     # sample rate s
 	values = [0] * 8    # ADC reading
-	timer = time.ctime()[10:18]
+	timer = time.ctime()[10:19]
+	sampling_on = True
 
 	while True:
 		for i in range(8):
 			values[i] = mcp.read_adc(i)
 		# delay for a sample rate frequency
 		time.sleep(frequency)
-		timer = time.ctime()[10:18]
-		print(timer)
-		print(values)
+		timer = time.ctime()[10:19]
+		if(sampling_on):
+			print(timer)
+			print(values)
 
 except KeyboardInterrupt:
 	GPIO.cleanup()
