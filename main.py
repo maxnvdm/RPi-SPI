@@ -33,7 +33,6 @@ def reset(reset_btn):
 	global clock_start
 	clock_start = time.time()
 	clear = os.system('clear')
-	pass
 
 def freq(freq_btn):
 	# changes the sampling rate between: 500ms, 1s, 2s
