@@ -1,15 +1,13 @@
 #!/usr/bin/python
 # Process of operations
-
-
 # Default: reads the sensors every 500ms
 from datetime import datetime
-
 import RPi.GPIO as GPIO
 import Adafruit_MCP3008
 import time
 import os
 import ldr
+from tmp import toDegrees
 
 GPIO.setmode(GPIO.BCM)
 
@@ -72,7 +70,10 @@ GPIO.add_event_detect(freq_btn, GPIO.FALLING, callback=freq, bouncetime=200)
 GPIO.add_event_detect(stop_btn, GPIO.FALLING, callback=stop, bouncetime=200)
 GPIO.add_event_detect(display_btn, GPIO.FALLING, callback=display, bouncetime=200)
 
-
+def toDegrees(voltage):
+    m = 100
+    c = -50
+    return m*voltage + c
 
 
 # Main loop
@@ -119,6 +120,13 @@ try:
 		#Read LDR value
 		print(values[0])
 		lightPercentage = round(ldr.read( values[0] )*100, 0)
+
+		#Temp voltage
+		tempVoltage = values[2] * (3.3/1024)
+
+		# Get the temperature in degrees
+		tempValue = toDegrees(tempVoltage)
+
 
 		clock_time = time.ctime()[10:19]
 		clock_current = time.time()
