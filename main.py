@@ -117,7 +117,6 @@ try:
 		potV = ('%.1f'%potV)+" V"
 
 		#Read LDR value
-		print(values[0])
 		lightPercentage = round(ldr.read( values[0] )*100, 0)
 
 		clock_time = time.ctime()[10:19]
