@@ -7,7 +7,7 @@ import Adafruit_MCP3008
 import time
 import os
 import ldr
-from tmp import toDegrees
+import collections
 
 GPIO.setmode(GPIO.BCM)
 
@@ -61,8 +61,10 @@ def stop(stop_btn):
 
 def display(display_btn):
 	# Displays the first 5 readings since the sop switch was pressed
+	global history
+	for reading in history:
+		print(reading)
 
-	pass
 
 # assign callback functions to falling edge detection on pins
 GPIO.add_event_detect(reset_btn, GPIO.FALLING, callback=reset, bouncetime=200)
@@ -80,6 +82,7 @@ def toDegrees(voltage):
 try:
 	# initialise variables
 	frequency = 0.5     # sample rate s
+	history = collections.deque("" ,5)
 	# global variable
 	ldr = ldr.LDR()
 
@@ -104,7 +107,6 @@ try:
 	values = [0] * 8    # ADC reading
 	clock_start = time.time()
 	sampling_on = True
-	history = [0]*5
 
 	print('{:10} {:10} {:>9} {:>10} {:>10}'.format(' Time', 'Timer', 'Pot', 'Temp', 'Light'))
 	while True:
@@ -118,14 +120,13 @@ try:
 		potV = ('%.1f'%potV)+" V"
 
 		#Read LDR value
-		print(values[0])
 		lightPercentage = round(ldr.read( values[0] )*100, 0)
 
 		#Temp voltage
 		tempVoltage = values[2] * (3.3/1024)
 
 		# Get the temperature in degrees
-		tempValue = toDegrees(tempVoltage)
+		tempValue = round(toDegrees(tempVoltage), 2)
 
 
 		clock_time = time.ctime()[10:19]
@@ -135,7 +136,9 @@ try:
 			timer = float('%.2f'%timer)
 			timer_clock = datetime.utcfromtimestamp(timer)
 			timer_clock = timer_clock.strftime("%H:%M:%S.%f")[:11]
-			print('{:10} {:10} {:>10} {:>10} {:>5}'.format(clock_time, timer_clock, potV, 'Temp', lightPercentage))
+			readings = [clock_time, timer_clock, potV, tempValue, lightPercentage]
+			history.append(readings)
+			print('{:10} {:10} {:>10} {:>10} {:>5}'.format(clock_time, timer_clock, potV, tempValue, lightPercentage))
 
 except KeyboardInterrupt:
 	GPIO.cleanup()
