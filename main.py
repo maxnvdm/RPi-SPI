@@ -123,8 +123,7 @@ try:
 		tempVoltage = values[2] * (3.3/1024)
 
 		# Get the temperature in degrees
-		temp = TEMP()
-		tempValue = temp.toDegrees(tempVoltage)
+		tempValue = toDegrees(tempVoltage)
 
 
 		clock_time = time.ctime()[10:19]
