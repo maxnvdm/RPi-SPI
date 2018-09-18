@@ -5,6 +5,8 @@ class LDR:
     debug = False
 
     def read(ten_bit_val):
+        nonlocal minimumLight
+        nonlocal maximumLight
         c = -(minimumLight)/(maximumLight-minimumLight)
         m = 1/(maximumLight-minimumLight)
         return m*int(ten_bit_val)+c
