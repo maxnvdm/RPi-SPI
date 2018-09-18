@@ -1,6 +1,6 @@
 # Process of operations
 # Default: reads the sensors every 500ms
-
+from datetime import datetime
 import RPi.GPIO as GPIO
 import Adafruit_MCP3008
 import time
@@ -9,7 +9,7 @@ import os
 GPIO.setmode(GPIO.BCM)
 
 # button pins
-reset_btn = 1
+reset_btn = 14
 freq_btn = 2
 stop_btn = 3
 display_btn = 4
@@ -30,16 +30,14 @@ mcp = Adafruit_MCP3008.MCP3008(clk=SPICLK, cs=SPICS, mosi=SPIMOSI, miso=SPIMISO)
 # Call-back functions
 def reset(reset_btn):
 	# Resets the timer and cleans the console
+	global clock_start
+	clock_start = time.time()
+	clear = os.system('clear')
 	pass
 
 def freq(freq_btn):
 	# changes the sampling rate between: 500ms, 1s, 2s
 	global frequency
-	# switcher = {
-	# 	0.5: lambda frequency: frequency + 0.5,
-	# 	1: lambda frequency: frequency + 1,
-	# 	2: lambda frequency: frequency - 1.5,
-	# }
 	if frequency==0.5:
 		frequency=1
 	elif frequency==1:
@@ -47,7 +45,6 @@ def freq(freq_btn):
 	elif frequency==2:
 		frequency=0.5
 	print("Frequency changed to: "+str(frequency)+"s")
-	# switcher.get(frequency)
 
 def stop(stop_btn):
 	# Stops or starts the reading (sampling) of the sensors
@@ -76,18 +73,29 @@ try:
 	# initialise variables
 	frequency = 0.5     # sample rate s
 	values = [0] * 8    # ADC reading
-	timer = time.ctime()[10:19]
+	clock_start = time.time()
 	sampling_on = True
+	history = [0]*5
 
+	print('{:10} {:10} {:>9} {:>10} {:>10}'.format(' Time', 'Timer', 'Pot', 'Temp', 'Light'))
 	while True:
 		for i in range(8):
 			values[i] = mcp.read_adc(i)
 		# delay for a sample rate frequency
 		time.sleep(frequency)
-		timer = time.ctime()[10:19]
+
+		# Pot voltage
+		potV = values[0]*(3.3/1024)
+		potV = ('%.1f'%potV)+" V"
+
+		clock_time = time.ctime()[10:19]
+		clock_current = time.time()
+		timer = clock_current - clock_start
 		if(sampling_on):
-			print(timer)
-			print(values)
+			timer = float('%.2f'%timer)
+			timer_clock = datetime.utcfromtimestamp(timer)
+			timer_clock = timer_clock.strftime("%H:%M:%S.%f")[:11]
+			print('{:10} {:10} {:>10} {:>10} {:>10}'.format(clock_time, timer_clock, potV, 'Temp', 'Light'))
 
 except KeyboardInterrupt:
 	GPIO.cleanup()
