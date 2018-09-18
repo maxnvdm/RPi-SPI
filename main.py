@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # Process of operations
 # Default: reads the sensors every 500ms 
 
@@ -5,10 +6,11 @@ import RPi.GPIO as GPIO
 import Adafruit_MCP3008
 import time
 import os
+import ldr
 
 GPIO.setmode(GPIO.BCM)
 
-# button pins
+# button pins #I think this means the actual pinout...
 reset_btn = 1
 freq_btn = 2
 stop_btn = 3
@@ -55,13 +57,33 @@ GPIO.add_event_detect(freq_btn, GPIO.FALLING, callback=reset, bouncetime=200)
 GPIO.add_event_detect(stop_btn, GPIO.FALLING, callback=reset, bouncetime=200)
 GPIO.add_event_detect(display_btn, GPIO.FALLING, callback=reset, bouncetime=200)
 
+
+
+
 # Main loop
 try:
 	# initialise variables
 	frequency = 0.5     # sample rate s
 	# global variable
 	values = [0] * 8
+	ldr = LDR()
 
+	print("Calibrating LDR...")
+	
+	print("Set lowest lighting bound for LDR")
+	print("Ready? [y]")
+	key = input()
+	while (key != 'y'):
+		key = input()
+	ldr.calibrateMin( mcp.read_adc(0) )
+
+	print("Set upper lighting bound for LDR")
+	print("Ready? [y]")
+	key = input()
+	while (key != 'y'):
+		key = input()
+	ldr.calibrateMax( mcp.read_adc(0) )
+	
 	while True:
 		for i in range(8):
 			values[i] = mcp.read_adc(i)
