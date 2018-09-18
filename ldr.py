@@ -4,7 +4,7 @@ class LDR:
     maximumLight = 0
     debug = False
 
-    def readLDR(ten_bit_val):
+    def read(ten_bit_val):
         c = -(minimumLight)/(maximumLight-minimumLight)
         m = 1/(maximumLight-minimumLight)
         return m*int(ten_bit_val)+c
