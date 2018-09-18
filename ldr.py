@@ -4,21 +4,21 @@ class LDR:
     maximumLight = 0
     debug = False
 
-    def read(ten_bit_val):
-        nonlocal minimumLight
-        nonlocal maximumLight
-        c = -(minimumLight)/(maximumLight-minimumLight)
-        m = 1/(maximumLight-minimumLight)
-        return m*int(ten_bit_val)+c
+    def read(ten_bit_val, test):
+        global minimumLight
+        global maximumLight
+        c = -(float(minimumLight))/(maximumLight-minimumLight)
+        m = 1/(float(maximumLight-minimumLight))
+        return m*float(test)+c
 
-    def calibrateMin(ten_bit_val):
-        nonlocal minimumLight
-        minimumLight = int(ten_bit_val)
-        print("Minimum calibrated as: " + str(minimumLight)
+    def calibrateMin(ten_bit_val, test):
+        global minimumLight
+        minimumLight = int(test) - 10
+        print("Minimum calibrated as: " + str(minimumLight))
         return minimumLight
 
-    def calibrateMax(ten_bit_val):
-        nonlocal maximumLight
-        maximumLight = int(ten_bit_val)
-        print("Minimum calibrated as: " + str(maximumLight)
+    def calibrateMax(ten_bit_val, test):
+        global maximumLight
+        maximumLight = int(test) + 10
+        print("Maximum calibrated as: " + str(maximumLight))
         return maximumLight

@@ -1,12 +1,10 @@
 #!/usr/bin/python
 # Process of operations
-<<<<<<< HEAD
-# Default: reads the sensors every 500ms 
 
-=======
+
 # Default: reads the sensors every 500ms
 from datetime import datetime
->>>>>>> 1c7c55ab2365bbbe166a22a5bf0bee383c66b4d7
+
 import RPi.GPIO as GPIO
 import Adafruit_MCP3008
 import time
@@ -15,13 +13,8 @@ import ldr
 
 GPIO.setmode(GPIO.BCM)
 
-<<<<<<< HEAD
-# button pins #I think this means the actual pinout...
-reset_btn = 1
-=======
 # button pins
 reset_btn = 14
->>>>>>> 1c7c55ab2365bbbe166a22a5bf0bee383c66b4d7
 freq_btn = 2
 stop_btn = 3
 display_btn = 4
@@ -87,23 +80,25 @@ try:
 	# initialise variables
 	frequency = 0.5     # sample rate s
 	# global variable
-	ldr = LDR()
+	ldr = ldr.LDR()
 
 	print("Calibrating LDR...")
 	
 	print("Set lowest lighting bound for LDR")
 	print("Ready? [y]")
-	key = input()
+	key = ""
 	while (key != 'y'):
-		key = input()
-	ldr.calibrateMin( mcp.read_adc(0) )
+		key = raw_input()
+	t0 = mcp.read_adc(0)
+	ldr.calibrateMin(t0)
 
 	print("Set upper lighting bound for LDR")
 	print("Ready? [y]")
-	key = input()
+	key = ""
 	while (key != 'y'):
-		key = input()
-	ldr.calibrateMax( mcp.read_adc(0) )
+		key = raw_input()
+	t1 = mcp.read_adc(0)
+	ldr.calibrateMax(t1)
 	
 	values = [0] * 8    # ADC reading
 	clock_start = time.time()
@@ -122,7 +117,8 @@ try:
 		potV = ('%.1f'%potV)+" V"
 
 		#Read LDR value
-		lightPercentage = ldr.Read( values[0] )
+		print(values[0])
+		lightPercentage = round(ldr.read( values[0] )*100, 0)
 
 		clock_time = time.ctime()[10:19]
 		clock_current = time.time()
@@ -131,7 +127,7 @@ try:
 			timer = float('%.2f'%timer)
 			timer_clock = datetime.utcfromtimestamp(timer)
 			timer_clock = timer_clock.strftime("%H:%M:%S.%f")[:11]
-			print('{:10} {:10} {:>10} {:>10} {:>10}'.format(clock_time, timer_clock, potV, 'Temp', lightPercentage))
+			print('{:10} {:10} {:>10} {:>10} {:>5}'.format(clock_time, timer_clock, potV, 'Temp', lightPercentage))
 
 except KeyboardInterrupt:
 	GPIO.cleanup()
